@@ -23,7 +23,7 @@ namespace UltimatumRadiance
 
             Log("Initalizing.");
             USceneManager.activeSceneChanged += CheckForRadiance;
-            ModHooks.Instance.LanguageGetHook += LangGet;
+            ModHooks.LanguageGetHook += LangGet;
         }
 
 
@@ -35,10 +35,10 @@ namespace UltimatumRadiance
         public void Unload()
         {
             USceneManager.activeSceneChanged -= CheckForRadiance;
-            ModHooks.Instance.LanguageGetHook -= LangGet;
+            ModHooks.LanguageGetHook -= LangGet;
         }
 
-        private static string LangGet(string key, string sheettitle)
+        private static string LangGet(string key, string sheettitle, string orig)
         {
             switch (key)
             {
@@ -48,7 +48,7 @@ namespace UltimatumRadiance
                     return "Incredible! For a mere Speck to take up arms and defy the brilliant deity's ultimatum is to be consigned to oblivion, and yet thou survive!\n\n" +
                         "But couldst thou ever hope to overcome that mighty God tuned at the core of dream and mind, when met in perfect state, at peak of all others? We think not!\n\n" +
                         "Seriously, thy time is probably better spent elsewhere.";
-                default: return Language.Language.GetInternal(key, sheettitle);
+                default: return orig;
             }
         }
 

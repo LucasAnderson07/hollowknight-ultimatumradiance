@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using HutongGames.PlayMaker;
+﻿using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
-using ModCommon.Util;
-using JetBrains.Annotations;
+using SFCore.Utils;
 using UnityEngine;
 using Logger = Modding.Logger;
 
@@ -233,9 +231,6 @@ namespace UltimatumRadiance
 
                 _spikeMasterControl.SetState("Spike Waves");
 
-                //Prevent ddark cheese; if you try to dive onto spikes you take damage
-                StartCoroutine(AddDivePunishment());
-
                 //More generous orbs
                 _attackCommands.GetAction<Wait>("Orb Summon", 2).time = 1.5f;
                 _attackCommands.GetAction<SetIntValue>("Orb Antic", 1).intValue = 2;
@@ -331,37 +326,9 @@ namespace UltimatumRadiance
                     {
                         platSpikesSet = true;
                         GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat").ChangeState(GetFsmEventByName(GameObject.Find("Radiant Plat Small (10)").LocateMyFSM("radiant_plat"), "SLOW VANISH"));
-                        StartCoroutine(AddDivePunishment()); //Dive cheese prevention here too
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Add behavior to the player's dive state ("Q2 Land") that deals damage. Behavior is added after a 2 second delay.
-        /// </summary>
-        private IEnumerator AddDivePunishment()
-        {
-            yield return new WaitForSeconds(2); //Wait for spikes to go up
-            _spellControl.InsertAction("Q2 Land", new CallMethod
-            {
-                behaviour = this,
-                methodName = "DivePunishment", //Add a method to take damage to the player's dive FSM
-                parameters = new FsmVar[0],
-                everyFrame = false
-            }, 0);
-            yield break;
-        }
-
-        /// <summary>
-        /// Behavior added by AddDivePunishment that actually deals the damage.
-        /// </summary>
-        [UsedImplicitly]
-        public void DivePunishment()
-        {
-            Log("YOU WON'T CHEESE SPIKES IN THIS TOWN AGAIN");
-            HeroController.instance.TakeDamage(gameObject, GlobalEnums.CollisionSide.bottom, 1, 0); //Knight takes a hit
-            EventRegister.SendEvent("HERO DAMAGED"); //Tells the UI to refresh
         }
 
         /// <summary>
